@@ -36,8 +36,8 @@ TinyCompagnon est un assistant numérique. Il offre plusieurs fonctionnalités u
 ## Guide d'Installation
 
 ### Prérequis
-- Raspberry Pi (testé sur Raspberry Pi 4)
-- Écran tactile officiel Raspberry Pi
+- Machine pouvant faire tourner Python (testé sur Windows)
+- Écran HDMI
 - Python 3.7+
 - pip (gestionnaire de paquets Python)
 
@@ -67,10 +67,8 @@ TinyCompagnon est un assistant numérique. Il offre plusieurs fonctionnalités u
    - Créer un compte développeur sur [Spotify](https://developer.spotify.com/)
    - Obtenir une clé API sur [Meteoblue](https://www.meteoblue.com/en/weather-api)
    - Obtenir une clé API sur [NewsAPI](https://newsapi.org/)
-   - Créer un projet sur [Google Cloud Console](https://console.cloud.google.com/) pour YouTube
-   - Configurer l'[Instagram Basic Display API](https://developers.facebook.com/docs/instagram-basic-display-api/)
 
-5. Configurer le fichier config.json avec toutes les clées API
+5. Configurer le fichier config.json avec toutes les clés API
 
 
 6. Lancer l'application :
@@ -79,21 +77,6 @@ TinyCompagnon est un assistant numérique. Il offre plusieurs fonctionnalités u
 7. Accéder à l'interface web de contrôle :
    - Ouvrir un navigateur
    - Aller sur `http://adresse-ip-dans-la-console:XXXX`
-
-## Structure des Dossiers
-TinyCompagnon/
-├── main.py
-├── config.json
-├── requirements.txt
-├── static/
-│ ├── css/
-│ ├── images/
-│ │ └── Weather Icons/
-│ └── js/
-├── templates/
-│ └── index.html
-└── uploaded_photos/
-
 
 ## Dépendances Principales
 - Flask
