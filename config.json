@@ -1,0 +1,18 @@
+{
+    "spotify": {
+        "client_id": "YOUR_CLIENT_ID",
+        "client_secret": "YOUR_CLIENT_SECRET",
+        "redirect_uri": "YOUR_REDIRECT_URI"
+    },
+    "meteoblue": {
+        "METEOBLUE_API_KEY": "YOUR_METEOBLUE_API_KEY",
+        "LAT": "YOUR_LATITUDE",
+        "LON": "YOUR_LONGITURE  ",
+        "ASL": "YOUR_ALTITUDE"
+    },
+    "newsapi": {
+        "API_KEY": "YOUR_API_KEY",
+        "COUNTRY": "YOUR_COUNTRY",
+        "CATEGORY": "YOUR_CATEGORY (general, business, entertainment, health, science, sports, technology)"
+    }
+} 

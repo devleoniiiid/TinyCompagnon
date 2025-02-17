@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TinyDesk Controller</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>TinyCompagnon Controller</h1>
+        <div class="theme-switch-container">
+            <label class="theme-switch">
+                <input type="checkbox" id="theme-toggle">
+                <span class="slider round"></span>
+            </label>
+            <span class="theme-label">Mode Sombre</span>
+        </div>
+        <div class="control-sections">
+            <div class="screen-control">
+                <h3>Contrôle de l'écran</h3>
+                <div class="button-group">
+                    <button onclick="changeScreen('clock')" class="screen-button">Horloge</button>
+                    <button onclick="changeScreen('spotify')" class="screen-button">Spotify</button>
+                    <button onclick="changeScreen('weather')" class="screen-button">Météo</button>
+                    <button onclick="changeScreen('news')" class="screen-button">Actualités</button>
+                    <button onclick="changeScreen('photo')" class="screen-button">Photo</button>
+                </div>
+            </div>
+        </div>
+        <div class="photo-upload">
+            <div class="upload-section">
+                <div class="upload-container">
+                    <h2>Télécharger une photo</h2>
+                    <p>Glissez et déposez une image ici ou cliquez pour télécharger</p>
+                    <input type="file" id="fileInput" accept="image/*">
+                    <button class="upload-button">Télécharger</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script>
+    function changeScreen(screen) {
+        fetch(`/change_screen/${screen}`)
+            .then(response => response.json())
+            .then(data => {
+                document.querySelectorAll('.screen-button').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                event.target.classList.add('active');
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+            });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const themeToggle = document.getElementById('theme-toggle');
+        
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            themeToggle.checked = true;
+        }
+        
+        themeToggle.addEventListener('change', () => {
+            if (themeToggle.checked) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+            }
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const uploadContainer = document.querySelector('.upload-container');
+        const fileInput = document.getElementById('fileInput');
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadContainer.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            uploadContainer.addEventListener(eventName, () => {
+                uploadContainer.classList.add('dragover');
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            uploadContainer.addEventListener(eventName, () => {
+                uploadContainer.classList.remove('dragover');
+            }, false);
+        });
+
+        uploadContainer.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFiles(files);
+        }
+
+        function handleFiles(files) {
+            const formData = new FormData();
+            formData.append('photo', files[0]);
+
+            fetch('/upload_photo', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('Image téléchargée avec succès');
+                } else {
+                    alert('Erreur lors du téléchargement');
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                alert('Erreur lors du téléchargement');
+            });
+        }
+
+        document.querySelector('.upload-button').addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+        });
+    });
+    </script>
+    <style>
+    :root {
+        --bg-color: #ffffff;
+        --text-color: #333333;
+        --control-bg: #f5f5f5;
+        --main-container-bg: #e0e0e0;
+        --button-bg: #2196F3;
+        --button-hover: #1976D2;
+        --button-active: #1565C0;
+        --shadow-color: rgba(0,0,0,0.1);
+        --upload-border: #cccccc;
+    }
+
+    [data-theme="dark"] {
+        --bg-color: #1a1a1a;
+        --text-color: #ffffff;
+        --control-bg: #2d2d2d;
+        --main-container-bg: #202020;
+        --button-bg: #1565C0;
+        --button-hover: #1976D2;
+        --button-active: #2196F3;
+        --shadow-color: rgba(255,255,255,0.1);
+        --upload-border: #4a4a4a;
+        --container-bg: #202020;
+    }
+
+    body {
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        transition: all 0.3s ease;
+    }
+
+    .theme-switch-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .theme-switch {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 34px;
+    }
+
+    .theme-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+    }
+
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 26px;
+        width: 26px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: .4s;
+    }
+
+    input:checked + .slider {
+        background-color: #2196F3;
+    }
+
+    input:checked + .slider:before {
+        transform: translateX(26px);
+    }
+
+    .slider.round {
+        border-radius: 34px;
+    }
+
+    .slider.round:before {
+        border-radius: 50%;
+    }
+
+    .theme-label {
+        font-size: 1em;
+        color: var(--text-color);
+    }
+
+    .control-sections {
+        padding: 20px;
+        background-color: var(--main-container-bg);
+        border-radius: 12px;
+        margin: 20px;
+        box-shadow: 0 4px 6px var(--shadow-color);
+    }
+
+    .screen-control {
+        background-color: var(--control-bg);
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 4px var(--shadow-color);
+    }
+
+    h3 {
+        margin-bottom: 15px;
+        color: var(--text-color);
+        text-align: center;
+        font-size: 1.2em;
+    }
+
+    .button-group {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .screen-button {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 1em;
+        background-color: var(--button-bg);
+        color: white;
+    }
+
+    .screen-button:hover {
+        background-color: var(--button-hover);
+    }
+
+    .screen-button.active {
+        background-color: var(--button-active);
+        transform: scale(1.05);
+    }
+
+    .upload-section {
+        background-color: var(--control-bg);
+        border-radius: 8px;
+        padding: 20px;
+        margin-top: 20px;
+        box-shadow: 0 2px 4px var(--shadow-color);
+    }
+
+    .upload-container {
+        border: 2px dashed var(--text-color);
+        border-radius: 8px;
+        padding: 20px;
+        text-align: center;
+        background-color: var(--bg-color);
+        transition: all 0.3s ease;
+    }
+
+    .upload-container.dragover {
+        background-color: var(--control-bg);
+        border-color: var(--button-bg);
+    }
+
+    .upload-container p {
+        color: var(--text-color);
+        margin: 10px 0;
+    }
+
+    .upload-button {
+        background-color: var(--button-bg);
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .upload-button:hover {
+        background-color: var(--button-hover);
+    }
+
+    #fileInput {
+        display: none;
+    }
+    </style>
+</body>
+</html> 

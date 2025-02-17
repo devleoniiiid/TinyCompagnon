@@ -1,0 +1,6 @@
+tk
+spotipy
+flask
+Pillow
+requests
+python-dotenv 
